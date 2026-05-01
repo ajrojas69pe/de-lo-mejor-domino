@@ -841,6 +841,9 @@ input[type=text], input[type=password], select {
     <div class="nav-item" onclick="showTab('mejores')" id="tab-btn-mejores">
       <span class="nav-icon">🏆</span> Mejores
     </div>
+    <div class="nav-item" onclick="showTab('pollas')" id="tab-btn-pollas">
+      <span class="nav-icon">🏆</span> Torneos
+    </div>
   </nav>
 
   <div class="sidebar-bottom">
@@ -1126,6 +1129,180 @@ input[type=text], input[type=password], select {
     </div>
   </div>
 
+
+  <!-- TAB: TORNEOS -->
+  <div id="tab-pollas" style="display:none;">
+    <div style="max-width:1100px;margin:0 auto;">
+
+      <!-- SUB-TABS -->
+      <div style="display:flex;gap:4px;margin-bottom:24px;background:rgba(0,0,0,0.3);border-radius:10px;padding:4px;width:fit-content;">
+        <button id="subtab-btn-polla" onclick="showSubTab('polla')"
+          style="padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;background:var(--accent);color:#000;">
+          🎲 Polla
+        </button>
+        <button id="subtab-btn-suizo" onclick="showSubTab('suizo')"
+          style="padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;background:transparent;color:var(--text2);">
+          ♟️ Suizo
+        </button>
+      </div>
+
+      <!-- ══════════ SUB-TAB: POLLA ══════════ -->
+      <div id="subtab-polla">
+
+      <!-- ESTADO: sin torneo activo -->
+      <div id="pollaVacia">
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:64px;margin-bottom:16px;">🎲</div>
+          <div style="font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--accent);margin-bottom:8px;">POLLA · ELIMINACIÓN</div>
+          <div style="color:var(--text2);margin-bottom:32px;font-size:15px;">No hay polla activa. Crea una nueva para comenzar.</div>
+          <button class="btn btn-accent" onclick="mostrarCrearPolla()" id="btnCrearPolla" style="font-size:15px;padding:14px 32px;">🎲 Crear Nueva Polla</button>
+        </div>
+      </div>
+
+      <!-- FORMULARIO CREAR POLLA -->
+      <div id="pollaForm" style="display:none;">
+        <div style="background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:28px;max-width:800px;margin:0 auto;">
+          <div style="font-family:'Oswald',sans-serif;font-size:18px;color:var(--accent);margin-bottom:24px;text-transform:uppercase;letter-spacing:1px;">🎲 Nueva Polla</div>
+
+          <!-- Paso 1: Nombre -->
+          <div style="margin-bottom:20px;">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Nombre del Torneo</div>
+            <input id="pollaNombre" placeholder="Ej: Polla Mayo 2025" maxlength="40"
+              style="width:100%;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);color:var(--text);
+              padding:10px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:14px;" />
+          </div>
+
+          <!-- Tamaño del torneo (Polla = siempre eliminación) -->
+          <div id="pollaTamanoWrap" style="margin-bottom:24px;">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">¿Cuántos jugadores participan?</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn btn-muted" onclick="seleccionarTamanoPolla(4)"  id="ptbtn4"  style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">4</button>
+              <button class="btn btn-muted" onclick="seleccionarTamanoPolla(8)"  id="ptbtn8"  style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">8</button>
+              <button class="btn btn-muted" onclick="seleccionarTamanoPolla(16)" id="ptbtn16" style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">16</button>
+              <button class="btn btn-muted" onclick="seleccionarTamanoPolla(32)" id="ptbtn32" style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">32</button>
+            </div>
+          </div>
+
+          <!-- Paso 3: Slots de jugadores -->
+          <div id="pollaSlots" style="display:none;">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;">
+              Selecciona los jugadores inscritos — <span id="pollaSlotsConteo" style="color:var(--accent);font-weight:700;"></span>
+            </div>
+            <div id="pollaSlotsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;"></div>
+
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button class="btn btn-accent" onclick="crearPolla()" style="flex:1;font-size:15px;">🎲 Sortear Mesas y Comenzar</button>
+              <button class="btn btn-muted" onclick="cancelarCrearPolla()">Cancelar</button>
+            </div>
+          </div>
+
+          <div id="pollaCancelBtn" style="margin-top:8px;">
+            <button class="btn btn-muted" onclick="cancelarCrearPolla()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TORNEO ACTIVO -->
+      <div id="pollaActiva" style="display:none;">
+
+        <!-- Header del torneo -->
+        <div style="background:rgba(0,0,0,0.5);border:1px solid rgba(245,197,24,0.3);border-radius:14px;padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1;">
+            <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">Torneo Activo</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:var(--accent);" id="pollaTitulo">—</div>
+            <div style="font-size:13px;color:var(--text3);" id="pollaInfoFase">—</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-green btn-sm" onclick="avanzarFasePolla()" id="btnAvanzarFase" style="display:none;">➡️ Avanzar a siguiente fase</button>
+            <button class="btn btn-muted btn-sm" onclick="confirmarEliminarPolla()">🗑️ Eliminar Torneo</button>
+          </div>
+        </div>
+
+        <!-- Fases -->
+        <div id="pollaFasesWrap"></div>
+
+      </div><!-- end pollaActiva -->
+      </div><!-- end subtab-polla -->
+
+      <!-- ══════════ SUB-TAB: SUIZO ══════════ -->
+      <div id="subtab-suizo" style="display:none;">
+
+        <div id="suizoVacio">
+          <div style="text-align:center;padding:60px 20px;">
+            <div style="font-size:64px;margin-bottom:16px;">♟️</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--accent);margin-bottom:8px;">SISTEMA SUIZO</div>
+            <div style="color:var(--text2);margin-bottom:32px;font-size:15px;">No hay torneo Suizo activo. Puede convivir con una Polla activa.</div>
+            <button class="btn btn-accent" onclick="mostrarCrearSuizo()" style="font-size:15px;padding:14px 32px;">♟️ Crear Torneo Suizo</button>
+          </div>
+        </div>
+
+        <div id="suizoForm" style="display:none;">
+          <div style="background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:28px;max-width:800px;margin:0 auto;">
+            <div style="font-family:'Oswald',sans-serif;font-size:18px;color:var(--accent);margin-bottom:24px;text-transform:uppercase;letter-spacing:1px;">♟️ Nuevo Torneo Suizo</div>
+
+            <div style="margin-bottom:20px;">
+              <div style="font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Nombre del Torneo</div>
+              <input id="suizoNombre" placeholder="Ej: Suizo Mayo 2025" maxlength="40"
+                style="width:100%;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);color:var(--text);padding:10px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:14px;" />
+            </div>
+
+            <div style="margin-bottom:24px;">
+              <div style="font-size:12px;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">¿Cuántas rondas?</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-muted" onclick="seleccionarRondasSuizo(3)"  id="srbtn3"  style="font-family:Oswald,sans-serif;font-size:16px;font-weight:700;min-width:56px;">3</button>
+                <button class="btn btn-muted" onclick="seleccionarRondasSuizo(5)"  id="srbtn5"  style="font-family:Oswald,sans-serif;font-size:16px;font-weight:700;min-width:56px;">5</button>
+                <button class="btn btn-muted" onclick="seleccionarRondasSuizo(7)"  id="srbtn7"  style="font-family:Oswald,sans-serif;font-size:16px;font-weight:700;min-width:56px;">7</button>
+                <button class="btn btn-muted" onclick="seleccionarRondasSuizo(9)"  id="srbtn9"  style="font-family:Oswald,sans-serif;font-size:16px;font-weight:700;min-width:56px;">9</button>
+                <button class="btn btn-muted" onclick="seleccionarRondasSuizo(11)" id="srbtn11" style="font-family:Oswald,sans-serif;font-size:16px;font-weight:700;min-width:56px;">11</button>
+              </div>
+            </div>
+
+            <div id="suizoTamanoWrap" style="display:none;margin-bottom:24px;">
+              <div style="font-size:12px;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">¿Cuántos jugadores?</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn btn-muted" onclick="seleccionarTamanoSuizo(4)"  id="stbtn4"  style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">4</button>
+                <button class="btn btn-muted" onclick="seleccionarTamanoSuizo(8)"  id="stbtn8"  style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">8</button>
+                <button class="btn btn-muted" onclick="seleccionarTamanoSuizo(16)" id="stbtn16" style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">16</button>
+                <button class="btn btn-muted" onclick="seleccionarTamanoSuizo(32)" id="stbtn32" style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;min-width:70px;">32</button>
+              </div>
+            </div>
+
+            <div id="suizoSlots" style="display:none;">
+              <div style="font-size:12px;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;">
+                Selecciona los jugadores — <span id="suizoSlotsConteo" style="color:var(--accent);font-weight:700;"></span>
+              </div>
+              <div id="suizoSlotsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;"></div>
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-accent" onclick="crearSuizo()" style="flex:1;font-size:15px;">♟️ Crear Torneo y Sortear</button>
+                <button class="btn btn-muted" onclick="cancelarCrearSuizo()">Cancelar</button>
+              </div>
+            </div>
+
+            <div id="suizoCancelBtn">
+              <button class="btn btn-muted" onclick="cancelarCrearSuizo()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="suizoActivo" style="display:none;">
+          <div style="background:rgba(0,0,0,0.5);border:1px solid rgba(245,197,24,0.3);border-radius:14px;padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;">
+              <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">Torneo Suizo Activo</div>
+              <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:var(--accent);" id="suizoTitulo">—</div>
+              <div style="font-size:13px;color:var(--text3);" id="suizoInfoRonda">—</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-green btn-sm" onclick="avanzarRondaSuizo()" id="btnAvanzarSuizo" style="display:none;">➡️ Siguiente Ronda</button>
+              <button class="btn btn-muted btn-sm" onclick="confirmarEliminarSuizo()">🗑️ Eliminar Torneo</button>
+            </div>
+          </div>
+          <div id="suizoFasesWrap"></div>
+        </div>
+
+      </div><!-- end subtab-suizo -->
+
+    </div><!-- end max-width -->
+  </div><!-- end tab-pollas -->
 </div><!-- /content -->
 
 <!-- EDITOR OVERLAY -->
@@ -1751,6 +1928,10 @@ async function cargarDatos() {
   }
 
   mostrarCargando(false);
+
+  // Cargar polla y suizo al inicio
+  await cargarPollaFirebase();
+  await cargarSuizoFirebase();
 }
 function guardar() {
   // Guardar en localStorage inmediatamente
@@ -1769,6 +1950,8 @@ function guardar() {
 }
 
 function gid() { return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+
 function byId(id) { for(var i=0;i<players.length;i++){if(players[i].id===id)return players[i];} return null; }
 
 // ── UTIL ──────────────────────────────────────────────────────────────────
@@ -1819,6 +2002,809 @@ function rachaMaxGanadas(p) {
   for(var i=0;i<h.length;i++){if(h[i].t==='w'){cur++;if(cur>max)max=cur;}else{cur=0;}}
   return max;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SISTEMA DE POLLAS (TORNEOS)
+// Mesas de 4 · 3 partidas rotativas · los 2 mejores pasan a siguiente fase
+// ═══════════════════════════════════════════════════════════════════════════
+
+var pollaActual = null; // Torneo en memoria
+
+// ── FIREBASE POLLAS ────────────────────────────────────────────────────────
+async function cargarPollaFirebase() {
+  try {
+    var data = await dbGetConfig('polla_activa');
+    pollaActual = data || null;
+  } catch(e) { pollaActual = null; }
+}
+async function guardarPollaFirebase() {
+  if (pollaActual) {
+    await dbSetConfig('polla_activa', pollaActual);
+  } else {
+    await dbDeleteConfig('polla_activa');
+  }
+}
+
+// ── UTILIDADES ─────────────────────────────────────────────────────────────
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+// Generar mesas de 4 con rotación de 3 partidas
+// Mesa: [A, B, C, D]
+// Partida 1: A/B vs C/D
+// Partida 2: A/C vs B/D
+// Partida 3: A/D vs B/C
+function generarPartidesMesa(mesa) {
+  return [
+    { pareja1: [mesa[0], mesa[1]], pareja2: [mesa[2], mesa[3]], pts1: null, pts2: null },
+    { pareja1: [mesa[0], mesa[2]], pareja2: [mesa[1], mesa[3]], pts1: null, pts2: null },
+    { pareja1: [mesa[0], mesa[3]], pareja2: [mesa[1], mesa[2]], pts1: null, pts2: null }
+  ];
+}
+
+// Crear fases desde lista de jugadores
+function crearFase(jugadores, numFase) {
+  var shuffled = shuffleArray(jugadores);
+  var mesas = [];
+  for (var i = 0; i < shuffled.length; i += 4) {
+    var mesa = shuffled.slice(i, i + 4);
+    mesas.push({
+      id: 'mesa_' + numFase + '_' + (i/4),
+      jugadores: mesa,
+      partidas: generarPartidesMesa(mesa),
+      completada: false
+    });
+  }
+  return { numero: numFase, mesas: mesas, completada: false };
+}
+
+// Calcular puntos totales de un jugador en una fase
+function puntosJugadorEnFase(fase, jugadorId) {
+  var total = 0;
+  fase.mesas.forEach(function(mesa) {
+    if (mesa.jugadores.indexOf(jugadorId) === -1) return;
+    mesa.partidas.forEach(function(p) {
+      if (p.pts1 === null) return;
+      if (p.pareja1.indexOf(jugadorId) !== -1) total += p.pts1;
+      if (p.pareja2.indexOf(jugadorId) !== -1) total += p.pts2;
+    });
+  });
+  return total;
+}
+
+// Obtener los 2 mejores de cada mesa (para avanzar de fase)
+function obtenerClasificados(fase) {
+  // Los 2 mejores por puntos de ESTA mesa
+  // Desempate: puntos acumulados en fases ANTERIORES
+  var clasificados = [];
+  fase.mesas.forEach(function(mesa) {
+    var scores = mesa.jugadores.map(function(jId) {
+      return {
+        id: jId,
+        ptsMesa: puntosJugadorEnMesa(mesa, jId),
+        ptsHistorico: puntosHistoricoAnterior(jId, fase)
+      };
+    });
+    scores.sort(function(a, b) {
+      if (b.ptsMesa !== a.ptsMesa) return b.ptsMesa - a.ptsMesa;
+      return b.ptsHistorico - a.ptsHistorico; // desempate por fases anteriores
+    });
+    clasificados.push(scores[0].id);
+    clasificados.push(scores[1].id);
+  });
+  return clasificados;
+}
+
+function puntosJugadorEnMesa(mesa, jugadorId) {
+  var total = 0;
+  mesa.partidas.forEach(function(p) {
+    if (p.pts1 === null) return;
+    if (p.pareja1.indexOf(jugadorId) !== -1) total += p.pts1;
+    if (p.pareja2.indexOf(jugadorId) !== -1) total += p.pts2;
+  });
+  return total;
+}
+
+function puntosHistoricoJugador(jugadorId) {
+  if (!pollaActual) return 0;
+  var total = 0;
+  pollaActual.fases.forEach(function(fase) {
+    total += puntosJugadorEnFase(fase, jugadorId);
+  });
+  return total;
+}
+
+// Verificar si todas las partidas de una fase están completas
+function faseCompleta(fase) {
+  return fase.mesas.every(function(mesa) {
+    return mesa.partidas.every(function(p) { return p.pts1 !== null; });
+  });
+}
+
+// ── UI PRINCIPAL ───────────────────────────────────────────────────────────
+function renderPollaActiva() {
+  if (!pollaActual) {
+    document.getElementById('pollaVacia').style.display = 'block';
+    document.getElementById('pollaActiva').style.display = 'none';
+    document.getElementById('pollaForm').style.display = 'none';
+    return;
+  }
+  document.getElementById('pollaVacia').style.display = 'none';
+  document.getElementById('pollaForm').style.display = 'none';
+  document.getElementById('pollaActiva').style.display = 'block';
+
+  document.getElementById('pollaTitulo').textContent = pollaActual.nombre;
+  var faseActual = pollaActual.fases[pollaActual.faseActual];
+  var esSuizo = pollaActual.sistema === 'suizo';
+
+  if (esSuizo) {
+    document.getElementById('pollaInfoFase').textContent =
+      '♟️ Sistema Suizo · Ronda ' + pollaActual.rondaActual + ' de ' + pollaActual.rondasTotal +
+      ' · ' + pollaActual.jugadores.length + ' jugadores';
+  } else {
+    var totalFases = pollaActual.fases.length;
+    document.getElementById('pollaInfoFase').textContent =
+      '🏆 Eliminación · Fase ' + (pollaActual.faseActual + 1) +
+      ' · ' + faseActual.mesas.length + ' mesas · ' +
+      pollaActual.jugadores.length + ' jugadores';
+  }
+
+  // Botón avanzar
+  var btnAvanzar = document.getElementById('btnAvanzarFase');
+  if (esSuizo) {
+    var rondasCompletas = pollaActual.rondaActual > pollaActual.rondasTotal;
+    btnAvanzar.textContent = '➡️ Siguiente Ronda';
+    btnAvanzar.style.display = faseCompleta(faseActual) && !rondasCompletas ? '' : 'none';
+  } else {
+    var esFinal = pollaActual.fases.length === 1 && pollaActual.fases[0].mesas.length === 1;
+    btnAvanzar.textContent = '➡️ Avanzar a siguiente fase';
+    btnAvanzar.style.display = faseCompleta(faseActual) && !esFinal ? '' : 'none';
+  }
+
+  renderFases();
+}
+
+function renderFases() {
+  var wrap = document.getElementById('pollaFasesWrap');
+  var esSuizo = pollaActual.sistema === 'suizo';
+  var html = '';
+
+  // ── Historial de rondas anteriores (colapsado) ──
+  pollaActual.fases.forEach(function(fase, fi) {
+    var esActual = fi === pollaActual.faseActual;
+    if (esActual) return; // la actual se muestra abajo completa
+
+    var label = esSuizo ? 'Ronda ' + fase.numero : 'Fase ' + fase.numero;
+
+    // Resumen colapsado de ronda completada
+    html += '<div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 16px;margin-bottom:10px;cursor:pointer;" onclick="toggleResumenFase('+fi+')">';
+    html += '<div style="display:flex;align-items:center;gap:10px;">';
+    html += '<span style="color:var(--green);font-size:14px;">✅</span>';
+    html += '<span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">' + label + ' · Completada</span>';
+    html += '<span style="margin-left:auto;font-size:11px;color:var(--text2);">▼ ver resultados</span>';
+    html += '</div>';
+    // Resumen de posiciones
+    html += '<div id="resumenFase_'+fi+'" style="display:none;margin-top:12px;">';
+    html += renderResumenFase(fase, fi);
+    html += '</div>';
+    html += '</div>';
+  });
+
+  // ── Ronda actual completa ──
+  var faseActual = pollaActual.fases[pollaActual.faseActual];
+  var label = esSuizo ? '▶ Ronda ' + faseActual.numero + ' · En curso' : '▶ Fase ' + faseActual.numero + ' · En curso';
+
+  html += '<div style="margin-bottom:24px;">';
+  html += '<div class="sec-title" style="font-size:15px;">' + label + '</div>';
+
+  faseActual.mesas.forEach(function(mesa, mi) {
+    html += renderMesaHTML(mesa, pollaActual.faseActual, mi, true);
+  });
+
+  // Si la ronda está completa
+  if (faseCompleta(faseActual)) {
+    if (esSuizo) {
+      var esUltimaRonda = pollaActual.fases.length >= pollaActual.rondasTotal;
+      if (esUltimaRonda) {
+        html += renderClasificacionSuizo();
+      } else {
+        html += renderStandingsSuizo();
+      }
+    } else {
+      var esUltimaFase = faseActual.mesas.length === 1;
+      if (esUltimaFase) {
+        html += renderGanadorHTML(faseActual);
+      } else {
+        html += renderClasificadosEliminacion(faseActual);
+      }
+    }
+  }
+
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+function toggleResumenFase(fi) {
+  var el = document.getElementById('resumenFase_'+fi);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function renderResumenFase(fase, fi) {
+  // Tabla de puntos por jugador en esa ronda
+  var jugPts = {};
+  fase.mesas.forEach(function(mesa) {
+    mesa.jugadores.forEach(function(id) {
+      jugPts[id] = puntosJugadorEnFase(fase, id);
+    });
+  });
+  var sorted = Object.keys(jugPts).sort(function(a,b){ return jugPts[b]-jugPts[a]; });
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  sorted.forEach(function(id, idx) {
+    var p = byId(id); var nombre = p ? p.name : id;
+    html += '<div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:6px 12px;display:flex;gap:8px;align-items:center;">';
+    html += '<span style="font-size:11px;color:var(--text2);">'+(idx+1)+'°</span>';
+    html += '<span style="font-size:13px;font-weight:600;color:var(--text);">'+nombre+'</span>';
+    html += '<span style="font-family:Oswald,sans-serif;font-size:15px;font-weight:700;color:var(--accent);">'+jugPts[id]+'</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderStandingsSuizo() {
+  // Tabla de posiciones parcial del suizo
+  var ranking = pollaActual.jugadores.map(function(id) {
+    var marcAcum = 0;
+    pollaActual.fases.forEach(function(fase) {
+      fase.mesas.forEach(function(mesa) {
+        mesa.partidas.forEach(function(p) {
+          if (p.pts1 === null) return;
+          if (p.pareja1.indexOf(id) !== -1) marcAcum += p.pts1;
+          if (p.pareja2.indexOf(id) !== -1) marcAcum += p.pts2;
+        });
+      });
+    });
+    var pl = byId(id);
+    return { id: id, nombre: pl ? pl.name : id, pts: puntosHistoricoJugador(id), marcAcum: marcAcum };
+  });
+  ranking.sort(function(a,b){ return b.pts!==a.pts ? b.pts-a.pts : b.marcAcum-a.marcAcum; });
+
+  var html = '<div style="background:rgba(0,0,0,0.35);border:1px solid rgba(245,197,24,0.2);border-radius:10px;padding:16px;margin-top:14px;">';
+  html += '<div style="font-family:Oswald,sans-serif;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">📊 Posiciones tras esta ronda</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:6px;">';
+  ranking.forEach(function(j, idx) {
+    html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;background:rgba(0,0,0,0.2);border-radius:6px;">';
+    html += '<span style="font-size:13px;color:var(--text2);min-width:20px;">'+(idx+1)+'°</span>';
+    html += '<span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">'+j.nombre+'</span>';
+    html += '<span style="font-family:Oswald,sans-serif;font-size:16px;font-weight:700;color:var(--accent);">'+j.pts+'</span>';
+    html += '<span style="font-size:11px;color:var(--text2);min-width:70px;text-align:right;">marc: '+j.marcAcum+'</span>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function renderClasificadosEliminacion(fase) {
+  var clasificados = obtenerClasificados(fase);
+  var html = '<div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);border-radius:10px;padding:14px;margin-top:12px;">';
+  html += '<div style="font-size:12px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">✅ Clasificados a siguiente fase</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  clasificados.forEach(function(jId) {
+    var p = byId(jId); var nombre = p ? p.name : jId;
+    html += '<div style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--green);">'+nombre+'</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function renderMesaHTML(mesa, fi, mi, editable) {
+  var jugNames = mesa.jugadores.map(function(id) {
+    var p = byId(id); return p ? p.name : id;
+  });
+  var labels = ['A','B','C','D'];
+
+  var html = '<div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:18px;margin-bottom:14px;">';
+  html += '<div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--accent);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;">🎲 Mesa ' + (mi+1) + '</div>';
+
+  // Jugadores de la mesa
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">';
+  mesa.jugadores.forEach(function(id, idx) {
+    var p = byId(id); var nombre = p ? p.name : id;
+    html += '<div style="background:rgba(245,197,24,0.1);border:1px solid rgba(245,197,24,0.25);border-radius:6px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--accent);">' +
+      labels[idx] + ': ' + nombre + '</div>';
+  });
+  html += '</div>';
+
+  // Partidas
+  // Nombres correctos de parejas por partida (usando IDs reales)
+  var parNombres = mesa.partidas.map(function(pt) {
+    var n1 = pt.pareja1.map(function(id){ var px=byId(id); return px?px.name:id; }).join('/');
+    var n2 = pt.pareja2.map(function(id){ var px=byId(id); return px?px.name:id; }).join('/');
+    return n1 + ' vs ' + n2;
+  });
+
+  mesa.partidas.forEach(function(p, pi) {
+    var completada = p.pts1 !== null;
+    html += '<div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px;margin-bottom:8px;">';
+    var tituloPartida = mesa.partidas.length === 1 
+      ? parNombres[pi]  // suizo: solo mostrar "A/B vs C/D"
+      : 'Partida ' + (pi+1) + ' · ' + parNombres[pi]; // polla: "Partida 1 · A/B vs C/D"
+    html += '<div style="font-size:12px;color:var(--blue2);margin-bottom:8px;font-weight:600;">' + tituloPartida + '</div>';
+
+    if (completada) {
+      // Mostrar resultado
+      var ganoPar1 = p.pts1 > p.pts2;
+      html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+      html += '<div style="font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:' + (ganoPar1?'var(--green)':'var(--red)') + ';">' + p.pts1 + '</div>';
+      html += '<div style="font-size:13px;color:var(--text2);">vs</div>';
+      html += '<div style="font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:' + (!ganoPar1?'var(--green)':'var(--red)') + ';">' + p.pts2 + '</div>';
+      if (editable) {
+        html += '<button class="btn btn-muted btn-sm" onclick="editarPartidaPolla(' + fi + ',' + mi + ',' + pi + ')" style="margin-left:auto;">✏️ Editar</button>';
+      }
+      html += '</div>';
+    } else if (editable) {
+      // Formulario para ingresar resultado
+      // Pareja 1 y Pareja 2 nombres
+      var par1nom = p.pareja1.map(function(id){ var px=byId(id); return px?px.name:id; }).join('/');
+      var par2nom = p.pareja2.map(function(id){ var px=byId(id); return px?px.name:id; }).join('/');
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">';
+      html += '<div style="font-size:12px;color:var(--blue);min-width:80px;font-weight:600;">'+par1nom+'</div>';
+      html += '<input type="number" min="0" max="999" placeholder="Pts" id="pts1_' + fi + '_' + mi + '_' + pi + '" style="width:80px;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);color:var(--text);padding:8px 10px;border-radius:6px;font-family:Barlow,sans-serif;font-size:16px;font-weight:700;text-align:center;" />';
+      html += '<div style="color:var(--text2);font-weight:700;font-size:16px;">vs</div>';
+      html += '<input type="number" min="0" max="999" placeholder="Pts" id="pts2_' + fi + '_' + mi + '_' + pi + '" style="width:80px;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);color:var(--text);padding:8px 10px;border-radius:6px;font-family:Barlow,sans-serif;font-size:16px;font-weight:700;text-align:center;" />';
+      html += '<div style="font-size:12px;color:var(--red);min-width:80px;font-weight:600;">'+par2nom+'</div>';
+      html += '<button class="btn btn-accent btn-sm" onclick="registrarPartidaPolla(' + fi + ',' + mi + ',' + pi + ')" style="margin-left:auto;">✅ Registrar</button>';
+      html += '</div>';
+    } else {
+      html += '<div style="color:var(--text2);font-size:13px;">Pendiente</div>';
+    }
+    html += '</div>';
+  });
+
+  // Tabla de puntos de la mesa
+  html += '<div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">';
+  html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;text-transform:uppercase;">Puntos en esta mesa</div>';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+  mesa.jugadores.forEach(function(id) {
+    var p = byId(id); var nombre = p ? p.name : id;
+    var pts = puntosJugadorEnMesa(mesa, id);
+    html += '<div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:6px 12px;text-align:center;">';
+    html += '<div style="font-size:11px;color:var(--text2);">' + nombre + '</div>';
+    html += '<div style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:var(--accent);">' + pts + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  html += '</div>';
+  return html;
+}
+
+function renderGanadorHTML(fase) {
+  // CAMPEÓN: solo cuentan puntos de la última mesa (fase final)
+  // En caso de empate → desempate por puntos históricos de fases anteriores
+  var todos = [];
+  fase.mesas.forEach(function(mesa) {
+    mesa.jugadores.forEach(function(id) {
+      var ptsFinal = puntosJugadorEnFase(fase, id);           // solo última mesa
+      var ptsHistorico = puntosHistoricoAnterior(id, fase);   // fases previas (solo desempate)
+      todos.push({ id: id, ptsFinal: ptsFinal, ptsHistorico: ptsHistorico });
+    });
+  });
+
+  // Ordenar: 1º por puntos de última mesa, 2º por histórico de fases anteriores
+  todos.sort(function(a, b) {
+    if (b.ptsFinal !== a.ptsFinal) return b.ptsFinal - a.ptsFinal;
+    return b.ptsHistorico - a.ptsHistorico;
+  });
+
+  var ganador = todos[0];
+  var segundo = todos[1];
+  var p = byId(ganador.id);
+  var nombre = p ? p.name : ganador.id;
+  var empate = segundo && segundo.ptsFinal === ganador.ptsFinal;
+
+  var html = '<div style="background:linear-gradient(135deg,rgba(245,197,24,0.2),rgba(0,0,0,0.6));border:2px solid var(--accent);border-radius:14px;padding:28px;text-align:center;margin-top:16px;">';
+  html += '<div style="font-size:56px;margin-bottom:10px;">🏆</div>';
+  html += '<div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Campeón de la Polla</div>';
+  html += '<div style="font-family:Oswald,sans-serif;font-size:32px;font-weight:700;color:var(--accent);margin-bottom:6px;">' + nombre + '</div>';
+  html += '<div style="font-family:Oswald,sans-serif;font-size:22px;color:var(--text3);margin-bottom:4px;">' + ganador.ptsFinal + ' pts en la final</div>';
+  if (empate) {
+    html += '<div style="font-size:12px;color:var(--text2);margin-top:6px;">Empate resuelto por puntos históricos (' + ganador.ptsHistorico + ' vs ' + segundo.ptsHistorico + ')</div>';
+  }
+
+  // Tabla de resultados finales
+  html += '<div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">';
+  todos.forEach(function(j, idx) {
+    var pj = byId(j.id); var nj = pj ? pj.name : j.id;
+    var medals = ['🥇','🥈','🥉','4️⃣'];
+    html += '<div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 16px;min-width:110px;">';
+    html += '<div style="font-size:20px;">' + (medals[idx]||'') + '</div>';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--text);margin:4px 0;">' + nj + '</div>';
+    html += '<div style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:var(--accent);">' + j.ptsFinal + '</div>';
+    html += '<div style="font-size:10px;color:var(--text2);">pts final</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+// Puntos históricos de un jugador en fases ANTERIORES a la indicada (para desempate)
+function puntosHistoricoAnterior(jugadorId, faseFinal) {
+  if (!pollaActual) return 0;
+  var total = 0;
+  pollaActual.fases.forEach(function(fase) {
+    if (fase === faseFinal) return; // excluir la fase final
+    total += puntosJugadorEnFase(fase, jugadorId);
+  });
+  return total;
+}
+
+
+// Clasificación final del Sistema Suizo
+function renderClasificacionSuizo() {
+  var ranking = pollaActual.jugadores.map(function(id) {
+    var ptsTotales = puntosHistoricoJugador(id);
+    // Desempate: total acumulado de marcadores en TODAS las partidas jugadas
+    var marcadorAcumulado = 0;
+    pollaActual.fases.forEach(function(fase) {
+      fase.mesas.forEach(function(mesa) {
+        mesa.partidas.forEach(function(p) {
+          if (p.pts1 === null) return;
+          if (p.pareja1.indexOf(id) !== -1) marcadorAcumulado += p.pts1;
+          if (p.pareja2.indexOf(id) !== -1) marcadorAcumulado += p.pts2;
+        });
+      });
+    });
+    var pl = byId(id);
+    return { id: id, nombre: pl ? pl.name : id, pts: ptsTotales, marcadorAcumulado: marcadorAcumulado };
+  });
+
+  // Ordenar: 1º puntos totales (victorias), 2º marcador acumulado (desempate)
+  ranking.sort(function(a,b) {
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    return b.marcadorAcumulado - a.marcadorAcumulado;
+  });
+
+  var medals = ['🥇','🥈','🥉'];
+  var html = '<div style="background:linear-gradient(135deg,rgba(245,197,24,0.15),rgba(0,0,0,0.5));border:2px solid var(--accent);border-radius:14px;padding:24px;margin-top:16px;">';
+  html += '<div style="font-size:40px;text-align:center;margin-bottom:10px;">♟️🏆</div>';
+  html += '<div style="font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:var(--accent);text-align:center;margin-bottom:4px;">CLASIFICACIÓN FINAL · SISTEMA SUIZO</div>';
+  html += '<div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:18px;">Desempate por marcador acumulado en todas las partidas</div>';
+
+  html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+  ranking.forEach(function(j, idx) {
+    var isWinner = idx === 0;
+    html += '<div style="display:flex;align-items:center;gap:12px;background:' + (isWinner?'rgba(245,197,24,0.12)':'rgba(0,0,0,0.3)') + ';border:1px solid ' + (isWinner?'rgba(245,197,24,0.3)':'rgba(255,255,255,0.07)') + ';border-radius:8px;padding:10px 16px;">';
+    html += '<div style="font-size:22px;min-width:32px;">' + (medals[idx]||(idx+1)+'°') + '</div>';
+    html += '<div style="flex:1;font-size:14px;font-weight:700;color:' + (isWinner?'var(--accent)':'var(--text)') + ';">' + j.nombre + '</div>';
+    html += '<div style="text-align:right;">';
+    html += '<div style="font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:' + (isWinner?'var(--accent)':'var(--text)') + ';">' + j.pts + '</div>';
+    html += '<div style="font-size:10px;color:var(--text2);">pts totales</div>';
+    html += '</div>';
+    html += '<div style="text-align:right;min-width:60px;">';
+    html += '<div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--text3);">' + j.marcadorAcumulado + '</div>';
+    html += '<div style="font-size:10px;color:var(--text2);">marcador acum.</div>';
+    html += '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+// ── CREAR POLLA ────────────────────────────────────────────────────────────
+var pollaTamanoSeleccionado = 0;
+var pollasistema = ''; // 'eliminacion' o 'suizo'
+var pollaRondasSeleccionadas = 0;
+
+function seleccionarSistema(s) {
+  pollasistema = s;
+  // Highlight
+  var estiloActivo = 'background:rgba(245,197,24,0.12);border:2px solid var(--accent);border-radius:10px;padding:16px;cursor:pointer;';
+  var estiloInactivo = 'background:rgba(0,0,0,0.35);border:2px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;cursor:pointer;';
+  document.getElementById('sistemaEliminacion').style.cssText = s==='eliminacion' ? estiloActivo : estiloInactivo;
+  document.getElementById('sistemaSuizo').style.cssText = s==='suizo' ? estiloActivo : estiloInactivo;
+
+  // Mostrar rondas solo si es suizo
+  var rw = document.getElementById('pollaRondasWrap');
+  if(rw) rw.style.display = s==='suizo' ? 'block' : 'none';
+
+  // Mostrar tamaño (para eliminacion directo, para suizo después de rondas)
+  var tw = document.getElementById('pollaTamanoWrap');
+  if(tw) tw.style.display = s==='eliminacion' ? 'block' : 'none';
+
+  // Reset slots
+  document.getElementById('pollaSlots').style.display = 'none';
+  pollaTamanoSeleccionado = 0;
+  pollaRondasSeleccionadas = 0;
+  [4,8,16,32].forEach(function(n){
+    var btn = document.getElementById('ptbtn'+n);
+    if(btn) btn.className='btn btn-muted';
+  });
+}
+
+function seleccionarRondas(n) {
+  pollaRondasSeleccionadas = n;
+  [3,5,7,9,11].forEach(function(x){
+    var btn = document.getElementById('prbtn'+x);
+    if(btn) btn.className = x===n ? 'btn btn-accent' : 'btn btn-muted';
+  });
+  // Mostrar selector de tamaño
+  var tw = document.getElementById('pollaTamanoWrap');
+  if(tw) tw.style.display = 'block';
+  // Reset slots
+  document.getElementById('pollaSlots').style.display = 'none';
+  pollaTamanoSeleccionado = 0;
+  [4,8,16,32].forEach(function(n2){
+    var btn = document.getElementById('ptbtn'+n2);
+    if(btn) btn.className='btn btn-muted';
+  });
+}
+
+function mostrarCrearPolla() {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  pollaTamanoSeleccionado = 0;
+  document.getElementById('pollaVacia').style.display = 'none';
+  document.getElementById('pollaForm').style.display = 'block';
+  document.getElementById('pollaSlots').style.display = 'none';
+  document.getElementById('pollaCancelBtn').style.display = 'block';
+  document.getElementById('pollaNombre').value = '';
+  [4,8,16,32].forEach(function(n) {
+    var btn = document.getElementById('ptbtn'+n);
+    if (btn) btn.className = 'btn btn-muted';
+  });
+}
+
+function seleccionarTamanoPolla(n) {
+  pollaTamanoSeleccionado = n;
+  // Highlight selected button
+  [4,8,16,32].forEach(function(x) {
+    var btn = document.getElementById('ptbtn'+x);
+    if (btn) btn.className = x===n ? 'btn btn-accent' : 'btn btn-muted';
+  });
+
+  // Build slots grid
+  var grid = document.getElementById('pollaSlotsGrid');
+  grid.innerHTML = '';
+  for (var i = 0; i < n; i++) {
+    var slot = document.createElement('div');
+    slot.style.cssText = 'background:rgba(0,0,0,0.35);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;';
+    slot.innerHTML =
+      '<div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Jugador ' + (i+1) + '</div>' +
+      '<select id="pslot_'+i+'" onchange="actualizarSlots()" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);color:var(--text);padding:8px 10px;border-radius:6px;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;">' +
+      '<option value="">— Seleccionar —</option>' +
+      players.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('') +
+      '</select>';
+    grid.appendChild(slot);
+  }
+
+  document.getElementById('pollaSlots').style.display = 'block';
+  document.getElementById('pollaCancelBtn').style.display = 'none';
+  var numMesas = Math.floor(n/4);
+  document.getElementById('pollaSlotsConteo').textContent = '0 / ' + n + ' seleccionados · ' + numMesas + ' mesa' + (numMesas>1?'s':'') + ' por ronda';
+  actualizarSlots();
+}
+
+function actualizarSlots() {
+  var n = pollaTamanoSeleccionado;
+  var seleccionados = 0;
+  var usados = {};
+  // Highlight duplicados
+  for (var i = 0; i < n; i++) {
+    var sel = document.getElementById('pslot_'+i);
+    if (!sel) continue;
+    var val = sel.value;
+    if (val) {
+      seleccionados++;
+      if (usados[val]) {
+        sel.style.borderColor = 'var(--red)';
+      } else {
+        usados[val] = true;
+        sel.style.borderColor = 'rgba(255,255,255,0.15)';
+      }
+    }
+  }
+  var nm = Math.floor(n/4);
+  document.getElementById('pollaSlotsConteo').textContent = seleccionados + ' / ' + n + ' seleccionados · ' + nm + ' mesa' + (nm>1?'s':'') + ' por ronda';
+}
+
+function cancelarCrearPolla() {
+  document.getElementById('pollaForm').style.display = 'none';
+  document.getElementById('pollaVacia').style.display = 'block';
+  pollaTamanoSeleccionado = 0;
+}
+
+function crearPolla() {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  var nombre = document.getElementById('pollaNombre').value.trim();
+  if (!nombre) { toast('Escribe un nombre para el torneo', true); return; }
+  if (!pollaTamanoSeleccionado) { toast('Selecciona el tamaño del torneo', true); return; }
+
+  var n = pollaTamanoSeleccionado;
+  var jugIds = [];
+  var usados = {};
+  var errDuplicado = false;
+  for (var i = 0; i < n; i++) {
+    var sel = document.getElementById('pslot_'+i);
+    if (!sel || !sel.value) { toast('Completa todos los espacios de jugadores', true); return; }
+    if (usados[sel.value]) { toast('Hay jugadores repetidos, revisa los selects en rojo', true); return; }
+    usados[sel.value] = true;
+    jugIds.push(sel.value);
+  }
+
+  // Polla siempre es eliminación
+  var fase1 = crearFase(jugIds, 1);
+  pollaActual = {
+    nombre: nombre,
+    sistema: 'eliminacion',
+    jugadores: jugIds,
+    fases: [fase1],
+    faseActual: 0,
+    fechaCreacion: new Date().toISOString()
+  };
+  guardarPollaFirebase().then(function() {
+    toast('🎲 Polla "' + nombre + '" creada con ' + jugIds.length + ' jugadores');
+    renderPollaActiva();
+  });
+}
+
+// ── REGISTRAR PARTIDA ──────────────────────────────────────────────────────
+function registrarPartidaPolla(fi, mi, pi) {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  var v1 = parseInt(document.getElementById('pts1_'+fi+'_'+mi+'_'+pi).value);
+  var v2 = parseInt(document.getElementById('pts2_'+fi+'_'+mi+'_'+pi).value);
+  if (isNaN(v1) || isNaN(v2) || v1 < 0 || v2 < 0) {
+    toast('Ingresa puntos válidos', true); return;
+  }
+  if (v1 === v2) { toast('No puede haber empate en puntos', true); return; }
+
+  var partida = pollaActual.fases[fi].mesas[mi].partidas[pi];
+  partida.pts1 = v1;
+  partida.pts2 = v2;
+
+  // Sumar al ranking general
+  var mesa = pollaActual.fases[fi].mesas[mi];
+  var ganadores = v1 > v2 ? partida.pareja1 : partida.pareja2;
+  var perdedores = v1 > v2 ? partida.pareja2 : partida.pareja1;
+  ganadores.forEach(function(id) {
+    var p = byId(id);
+    if (p) { p.w = (p.w||0)+1; p.history = p.history||[]; p.history.push({t:'w',d:hoy()}); }
+  });
+  perdedores.forEach(function(id) {
+    var p = byId(id);
+    if (p) { p.l = (p.l||0)+1; p.history = p.history||[]; p.history.push({t:'l',d:hoy()}); }
+  });
+  guardar();
+
+  guardarPollaFirebase().then(function() {
+    toast('✅ Resultado registrado');
+    renderPollaActiva();
+  });
+}
+
+function editarPartidaPolla(fi, mi, pi) {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  var partida = pollaActual.fases[fi].mesas[mi].partidas[pi];
+  partida.pts1 = null;
+  partida.pts2 = null;
+  guardarPollaFirebase().then(function() { renderPollaActiva(); });
+}
+
+// ── AVANZAR FASE ───────────────────────────────────────────────────────────
+function avanzarFasePolla() {
+  if (!esAdmin()) { toast('Solo el administrador puede avanzar', true); return; }
+  var faseActual = pollaActual.fases[pollaActual.faseActual];
+  if (!faseCompleta(faseActual)) { toast('Completa todas las partidas primero', true); return; }
+
+  if (pollaActual.sistema === 'suizo') {
+    // SUIZO: nueva ronda con todos los jugadores, agrupados por puntos
+    var nuevaRonda = pollaActual.rondaActual + 1;
+    if (nuevaRonda > pollaActual.rondasTotal) {
+      toast('Ya se jugaron todas las rondas', true); return;
+    }
+    // Ordenar jugadores por puntos acumulados, desempate por marcador acumulado
+    var ranking = pollaActual.jugadores.map(function(id) {
+      // Calcular marcador acumulado total
+      var marcAcum = 0;
+      pollaActual.fases.forEach(function(fase) {
+        fase.mesas.forEach(function(mesa) {
+          mesa.partidas.forEach(function(p) {
+            if (p.pts1 === null) return;
+            if (p.pareja1.indexOf(id) !== -1) marcAcum += p.pts1;
+            if (p.pareja2.indexOf(id) !== -1) marcAcum += p.pts2;
+          });
+        });
+      });
+      return { id: id, pts: puntosHistoricoJugador(id), marcAcum: marcAcum };
+    });
+    ranking.sort(function(a,b) {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      return b.marcAcum - a.marcAcum; // desempate por marcador acumulado
+    });
+    var ordenados = ranking.map(function(r) { return r.id; });
+
+    // Evitar repetir enfrentamientos recientes
+    var nuevaFase = crearFaseSuizo(ordenados, pollaActual.fases.length + 1, pollaActual.fases);
+    pollaActual.fases.push(nuevaFase);
+    pollaActual.faseActual = pollaActual.fases.length - 1;
+    pollaActual.rondaActual = nuevaRonda;
+
+    guardarPollaFirebase().then(function() {
+      toast('♟️ Ronda ' + nuevaRonda + ' iniciada');
+      renderPollaActiva();
+    });
+
+  } else {
+    // ELIMINACIÓN: pasan los 2 mejores de cada mesa
+    var clasificados = obtenerClasificados(faseActual);
+    if (clasificados.length < 4) {
+      toast('No hay suficientes jugadores para otra fase', true); return;
+    }
+    var nuevaFase = crearFase(clasificados, pollaActual.fases.length + 1);
+    pollaActual.fases.push(nuevaFase);
+    pollaActual.faseActual = pollaActual.fases.length - 1;
+
+    guardarPollaFirebase().then(function() {
+      toast('➡️ Fase ' + (pollaActual.faseActual+1) + ' iniciada con ' + clasificados.length + ' jugadores');
+      renderPollaActiva();
+    });
+  }
+}
+
+// Crear fase Suizo: agrupa por puntos evitando rivales repetidos
+function crearFaseSuizo(jugadoresOrdenados, numFase, fasesAnteriores) {
+  // Sistema Suizo - Regla fija de emparejamiento:
+  // Grupo ordenado por puntos desc: [1°, 2°, 3°, 4°]
+  // Pareja 1: 1° y 3° (A/C)
+  // Pareja 2: 2° y 4° (B/D)
+  // Resultado: A/C vs B/D
+  // Así los mejores no juegan juntos sino cruzados
+
+  var mesas = [];
+  var lista = jugadoresOrdenados.slice(); // ya viene ordenado por puntos desc
+
+  for (var i = 0; i < lista.length; i += 4) {
+    var grupo = lista.slice(i, i + 4);
+    if (grupo.length < 4) break;
+
+    // 1°/3° vs 2°/4°
+    var pareja1 = [grupo[0], grupo[2]]; // 1° y 3°
+    var pareja2 = [grupo[1], grupo[3]]; // 2° y 4°
+
+    mesas.push({
+      id: 'mesa_' + numFase + '_' + (i/4),
+      jugadores: grupo,
+      partidas: [{
+        pareja1: pareja1,
+        pareja2: pareja2,
+        pts1: null,
+        pts2: null
+      }],
+      completada: false
+    });
+  }
+  return { numero: numFase, mesas: mesas, completada: false };
+}
+
+// ── ELIMINAR TORNEO ────────────────────────────────────────────────────────
+function confirmarEliminarPolla() {
+  if (!esAdmin()) { toast('Solo el administrador puede eliminar torneos', true); return; }
+  if (!confirm('¿Eliminar el torneo "' + pollaActual.nombre + '"? Esta acción no se puede deshacer.')) return;
+  pollaActual = null;
+  guardarPollaFirebase().then(function() {
+    toast('Torneo eliminado');
+    renderPollaActiva();
+  });
+}
+
+// Cargar polla al inicio
+
 
 // ── TOAST ─────────────────────────────────────────────────────────────────
 function toast(msg, err) {
@@ -2043,10 +3029,10 @@ function grafica14(dias, labels) {
 var tabActual='jugadores';
 function showTab(n){
   tabActual=n;
-  ['jugadores','enfrentamiento','ranking','reporte','mejores'].forEach(function(x){
+  ['jugadores','enfrentamiento','ranking','reporte','mejores','pollas'].forEach(function(x){
     document.getElementById('tab-'+x).style.display=x===n?'block':'none';
   });
-  ['jugadores','enfrentamiento','ranking','reporte','mejores'].forEach(function(x){
+  ['jugadores','enfrentamiento','ranking','reporte','mejores','pollas'].forEach(function(x){
     var btn=document.getElementById('tab-btn-'+x);
     if(btn)btn.classList.toggle('active',x===n);
   });
@@ -2056,7 +3042,8 @@ function showTab(n){
     enfrentamiento: '🎯 Resultado de Partida',
     ranking: '📊 Ranking',
     reporte: '📋 Reporte',
-    mejores: '🏆 Mejores'
+    mejores: '🏆 Mejores',
+    pollas: '🏆 Torneos'
   };
   var tb = document.getElementById('topbarTitle');
   if(tb) tb.textContent = titles[n] || n;
@@ -2069,6 +3056,7 @@ function showTab(n){
   if(n==='ranking'){renderRanking();renderParejas();}
   if(n==='reporte'){document.getElementById('reportDate').value=hoy();renderReporte();}
   if(n==='mejores')renderMejores();
+  if(n==='pollas')renderPollaActiva();
 }
 
 // ── PAGINACIÓN ────────────────────────────────────────────────────────────
@@ -3440,6 +4428,426 @@ document.getElementById('reportDate').value = hoy();
   document.getElementById('loginScreen').style.display = 'flex';
 })();
 
+
+
+
+
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SISTEMA SUIZO — Torneo independiente de la Polla
+// ═══════════════════════════════════════════════════════════════════════════
+
+var suizoActual = null;
+var suizoRondasSel = 0;
+var suizoTamanoSel = 0;
+
+// ── FIREBASE ───────────────────────────────────────────────────────────────
+async function cargarSuizoFirebase() {
+  try { suizoActual = await dbGetConfig('suizo_activo') || null; }
+  catch(e) { suizoActual = null; }
+}
+async function guardarSuizoFirebase() {
+  if (suizoActual) await dbSetConfig('suizo_activo', suizoActual);
+  else await dbDeleteConfig('suizo_activo');
+}
+
+// ── SUB-TABS ───────────────────────────────────────────────────────────────
+function showSubTab(name) {
+  ['polla','suizo'].forEach(function(t) {
+    var el = document.getElementById('subtab-'+t);
+    var btn = document.getElementById('subtab-btn-'+t);
+    if (el) el.style.display = t===name ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = t===name ? 'var(--accent)' : 'transparent';
+      btn.style.color = t===name ? '#000' : 'var(--text2)';
+    }
+  });
+  if (name==='suizo') renderSuizoActivo();
+}
+
+// ── CREAR SUIZO ────────────────────────────────────────────────────────────
+function mostrarCrearSuizo() {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  suizoRondasSel = 0; suizoTamanoSel = 0;
+  document.getElementById('suizoVacio').style.display = 'none';
+  document.getElementById('suizoForm').style.display = 'block';
+  document.getElementById('suizoSlots').style.display = 'none';
+  document.getElementById('suizoTamanoWrap').style.display = 'none';
+  document.getElementById('suizoCancelBtn').style.display = 'block';
+  document.getElementById('suizoNombre').value = '';
+  [3,5,7,9,11].forEach(function(n){ var b=document.getElementById('srbtn'+n); if(b) b.className='btn btn-muted'; });
+  [4,8,16,32].forEach(function(n){ var b=document.getElementById('stbtn'+n); if(b) b.className='btn btn-muted'; });
+}
+
+function seleccionarRondasSuizo(n) {
+  suizoRondasSel = n;
+  [3,5,7,9,11].forEach(function(x){ var b=document.getElementById('srbtn'+x); if(b) b.className=x===n?'btn btn-accent':'btn btn-muted'; });
+  document.getElementById('suizoTamanoWrap').style.display = 'block';
+  document.getElementById('suizoSlots').style.display = 'none';
+  suizoTamanoSel = 0;
+  [4,8,16,32].forEach(function(n2){ var b=document.getElementById('stbtn'+n2); if(b) b.className='btn btn-muted'; });
+}
+
+function seleccionarTamanoSuizo(n) {
+  suizoTamanoSel = n;
+  [4,8,16,32].forEach(function(x){ var b=document.getElementById('stbtn'+x); if(b) b.className=x===n?'btn btn-accent':'btn btn-muted'; });
+  var grid = document.getElementById('suizoSlotsGrid');
+  grid.innerHTML = '';
+  for (var i=0; i<n; i++) {
+    var slot = document.createElement('div');
+    slot.style.cssText = 'background:rgba(0,0,0,0.35);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;';
+    slot.innerHTML = '<div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;">Jugador '+(i+1)+'</div>' +
+      '<select id="sslot_'+i+'" onchange="actualizarSlotsSuizo()" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);color:var(--text);padding:8px 10px;border-radius:6px;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;">' +
+      '<option value="">— Seleccionar —</option>' +
+      players.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('') +
+      '</select>';
+    grid.appendChild(slot);
+  }
+  document.getElementById('suizoSlots').style.display = 'block';
+  document.getElementById('suizoCancelBtn').style.display = 'none';
+  var nm = Math.floor(n/4);
+  document.getElementById('suizoSlotsConteo').textContent = '0 / '+n+' seleccionados · '+nm+' mesa'+(nm>1?'s':'')+' por ronda';
+  actualizarSlotsSuizo();
+}
+
+function actualizarSlotsSuizo() {
+  var n=suizoTamanoSel, sel=0, usados={};
+  for(var i=0;i<n;i++){
+    var s=document.getElementById('sslot_'+i); if(!s) continue;
+    if(s.value){ sel++; s.style.borderColor=usados[s.value]?'var(--red)':'rgba(255,255,255,0.15)'; usados[s.value]=true; }
+  }
+  var nm=Math.floor(n/4);
+  document.getElementById('suizoSlotsConteo').textContent = sel+' / '+n+' seleccionados · '+nm+' mesa'+(nm>1?'s':'')+' por ronda';
+}
+
+function cancelarCrearSuizo() {
+  document.getElementById('suizoForm').style.display = 'none';
+  document.getElementById('suizoVacio').style.display = 'block';
+}
+
+function crearSuizo() {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  var nombre = document.getElementById('suizoNombre').value.trim();
+  if (!nombre) { toast('Escribe un nombre para el torneo', true); return; }
+  if (!suizoRondasSel) { toast('Selecciona el número de rondas', true); return; }
+  if (!suizoTamanoSel) { toast('Selecciona el número de jugadores', true); return; }
+
+  var n=suizoTamanoSel, jugIds=[], usados={};
+  for(var i=0;i<n;i++){
+    var s=document.getElementById('sslot_'+i);
+    if(!s||!s.value){ toast('Completa todos los espacios', true); return; }
+    if(usados[s.value]){ toast('Hay jugadores repetidos', true); return; }
+    usados[s.value]=true; jugIds.push(s.value);
+  }
+
+  var fase1 = crearFaseSuizo(shuffleArray(jugIds), 1, []);
+  suizoActual = {
+    nombre: nombre,
+    jugadores: jugIds,
+    fases: [fase1],
+    faseActual: 0,
+    rondasTotal: suizoRondasSel,
+    rondaActual: 1,
+    fechaCreacion: new Date().toISOString()
+  };
+  guardarSuizoFirebase().then(function() {
+    toast('♟️ Torneo Suizo "'+nombre+'" creado · '+suizoRondasSel+' rondas');
+    renderSuizoActivo();
+  });
+}
+
+// ── RENDER SUIZO ───────────────────────────────────────────────────────────
+function renderSuizoActivo() {
+  var elVacio  = document.getElementById('suizoVacio');
+  var elActivo = document.getElementById('suizoActivo');
+  var elForm   = document.getElementById('suizoForm');
+  if (!elVacio || !elActivo || !elForm) return; // DOM not ready
+
+  if (!suizoActual) {
+    elVacio.style.display  = 'block';
+    elActivo.style.display = 'none';
+    elForm.style.display   = 'none';
+    return;
+  }
+  elVacio.style.display  = 'none';
+  elForm.style.display   = 'none';
+  elActivo.style.display = 'block';
+
+  document.getElementById('suizoTitulo').textContent = suizoActual.nombre;
+  document.getElementById('suizoInfoRonda').textContent =
+    '♟️ Ronda '+suizoActual.rondaActual+' de '+suizoActual.rondasTotal+
+    ' · '+suizoActual.jugadores.length+' jugadores';
+
+  var faseActual = suizoActual.fases[suizoActual.faseActual];
+  var btn = document.getElementById('btnAvanzarSuizo');
+  var rondasDone = suizoActual.fases.length >= suizoActual.rondasTotal;
+  btn.style.display = faseCompleta(faseActual) && !rondasDone ? '' : 'none';
+
+  renderFasesSuizo();
+}
+
+function renderFasesSuizo() {
+  var wrap = document.getElementById('suizoFasesWrap');
+  var html = '';
+
+  // Rondas anteriores colapsadas
+  suizoActual.fases.forEach(function(fase, fi) {
+    if (fi === suizoActual.faseActual) return;
+    html += '<div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 16px;margin-bottom:10px;cursor:pointer;" onclick="toggleResumenSuizo('+fi+')">';
+    html += '<div style="display:flex;align-items:center;gap:10px;">';
+    html += '<span style="color:var(--green);">✅</span>';
+    html += '<span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;">Ronda '+fase.numero+' · Completada</span>';
+    html += '<span style="margin-left:auto;font-size:11px;color:var(--text2);">▼ ver resultados</span>';
+    html += '</div>';
+    html += '<div id="resumenSuizo_'+fi+'" style="display:none;margin-top:12px;">'+renderResumenSuizoFase(fase)+'</div>';
+    html += '</div>';
+  });
+
+  // Ronda actual
+  var faseActual = suizoActual.fases[suizoActual.faseActual];
+  html += '<div style="margin-bottom:24px;">';
+  html += '<div class="sec-title" style="font-size:15px;">▶ Ronda '+faseActual.numero+' · En curso</div>';
+  faseActual.mesas.forEach(function(mesa, mi) {
+    html += renderMesaSuizoHTML(mesa, suizoActual.faseActual, mi);
+  });
+
+  if (faseCompleta(faseActual)) {
+    var esUltima = suizoActual.fases.length >= suizoActual.rondasTotal;
+    html += esUltima ? renderClasificacionFinalSuizo() : renderStandingsSuizoActual();
+  }
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+function toggleResumenSuizo(fi) {
+  var el=document.getElementById('resumenSuizo_'+fi);
+  if(el) el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function renderResumenSuizoFase(fase) {
+  var jugPts={};
+  fase.mesas.forEach(function(mesa){
+    mesa.jugadores.forEach(function(id){ jugPts[id]=puntosJugadorEnFase(fase,id); });
+  });
+  var sorted=Object.keys(jugPts).sort(function(a,b){return jugPts[b]-jugPts[a];});
+  var html='<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  sorted.forEach(function(id,idx){
+    var p=byId(id); var n=p?p.name:id;
+    html+='<div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:6px 12px;display:flex;gap:8px;align-items:center;">';
+    html+='<span style="font-size:11px;color:var(--text2);">'+(idx+1)+'°</span>';
+    html+='<span style="font-size:13px;font-weight:600;color:var(--text);">'+n+'</span>';
+    html+='<span style="font-family:Oswald,sans-serif;font-size:15px;font-weight:700;color:var(--accent);">'+jugPts[id]+'</span>';
+    html+='</div>';
+  });
+  return html+'</div>';
+}
+
+function renderMesaSuizoHTML(mesa, fi, mi) {
+  var html='<div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:18px;margin-bottom:14px;">';
+  html+='<div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--accent);margin-bottom:14px;text-transform:uppercase;">🎲 Mesa '+(mi+1)+'</div>';
+
+  // Jugadores
+  var labels=['1°','2°','3°','4°'];
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">';
+  mesa.jugadores.forEach(function(id,idx){
+    var p=byId(id); var n=p?p.name:id;
+    html+='<div style="background:rgba(245,197,24,0.1);border:1px solid rgba(245,197,24,0.25);border-radius:6px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--accent);">'+labels[idx]+': '+n+'</div>';
+  });
+  html+='</div>';
+
+  // 1 sola partida
+  var part = mesa.partidas[0];
+  var par1nom = part.pareja1.map(function(id){var p=byId(id);return p?p.name:id;}).join('/');
+  var par2nom = part.pareja2.map(function(id){var p=byId(id);return p?p.name:id;}).join('/');
+
+  html+='<div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;">';
+  html+='<div style="font-size:12px;color:var(--blue2);margin-bottom:10px;font-weight:600;">'+par1nom+' vs '+par2nom+'</div>';
+
+  if (part.pts1 !== null) {
+    var gano1 = part.pts1 > part.pts2;
+    html+='<div style="display:flex;align-items:center;gap:16px;">';
+    html+='<div style="font-family:Oswald,sans-serif;font-size:28px;font-weight:700;color:'+(gano1?'var(--green)':'var(--red)')+';">'+part.pts1+'</div>';
+    html+='<div style="font-size:14px;color:var(--text2);">vs</div>';
+    html+='<div style="font-family:Oswald,sans-serif;font-size:28px;font-weight:700;color:'+(!gano1?'var(--green)':'var(--red)')+';">'+part.pts2+'</div>';
+    html+='<button class="btn btn-muted btn-sm" onclick="editarPartidaSuizo('+fi+','+mi+')" style="margin-left:auto;">✏️ Editar</button>';
+    html+='</div>';
+  } else {
+    html+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
+    html+='<div style="font-size:12px;color:var(--blue);font-weight:600;min-width:80px;">'+par1nom+'</div>';
+    html+='<input type="number" min="0" max="999" placeholder="Pts" id="spts1_'+fi+'_'+mi+'" style="width:80px;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);color:var(--text);padding:8px 10px;border-radius:6px;font-family:Barlow,sans-serif;font-size:16px;font-weight:700;text-align:center;" />';
+    html+='<div style="color:var(--text2);font-size:16px;font-weight:700;">vs</div>';
+    html+='<input type="number" min="0" max="999" placeholder="Pts" id="spts2_'+fi+'_'+mi+'" style="width:80px;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);color:var(--text);padding:8px 10px;border-radius:6px;font-family:Barlow,sans-serif;font-size:16px;font-weight:700;text-align:center;" />';
+    html+='<div style="font-size:12px;color:var(--red);font-weight:600;min-width:80px;">'+par2nom+'</div>';
+    html+='<button class="btn btn-accent btn-sm" onclick="registrarPartidaSuizo('+fi+','+mi+')" style="margin-left:auto;">✅ Registrar</button>';
+    html+='</div>';
+  }
+  html+='</div>';
+
+  // Puntos en mesa
+  html+='<div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">';
+  html+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px;text-transform:uppercase;">Puntos en esta mesa</div>';
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+  mesa.jugadores.forEach(function(id){
+    var p=byId(id); var n=p?p.name:id;
+    var pts=puntosJugadorEnMesa(mesa,id);
+    html+='<div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:6px 12px;text-align:center;">';
+    html+='<div style="font-size:11px;color:var(--text2);">'+n+'</div>';
+    html+='<div style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:var(--accent);">'+pts+'</div>';
+    html+='</div>';
+  });
+  html+='</div></div></div>';
+  return html;
+}
+
+function registrarPartidaSuizo(fi, mi) {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  var v1=parseInt(document.getElementById('spts1_'+fi+'_'+mi).value);
+  var v2=parseInt(document.getElementById('spts2_'+fi+'_'+mi).value);
+  if (isNaN(v1)||isNaN(v2)||v1<0||v2<0) { toast('Ingresa puntos válidos', true); return; }
+  if (v1===v2) { toast('No puede haber empate en puntos', true); return; }
+
+  var part = suizoActual.fases[fi].mesas[mi].partidas[0];
+  part.pts1=v1; part.pts2=v2;
+
+  // Sumar al ranking general
+  var gan=v1>v2?part.pareja1:part.pareja2;
+  var per=v1>v2?part.pareja2:part.pareja1;
+  gan.forEach(function(id){var p=byId(id);if(p){p.w=(p.w||0)+1;p.history=p.history||[];p.history.push({t:'w',d:hoy()});}});
+  per.forEach(function(id){var p=byId(id);if(p){p.l=(p.l||0)+1;p.history=p.history||[];p.history.push({t:'l',d:hoy()});}});
+  guardar();
+
+  guardarSuizoFirebase().then(function(){
+    toast('✅ Resultado registrado');
+    renderSuizoActivo();
+  });
+}
+
+function editarPartidaSuizo(fi, mi) {
+  if (!esOperador()) { toast('Sin permisos', true); return; }
+  suizoActual.fases[fi].mesas[mi].partidas[0].pts1 = null;
+  suizoActual.fases[fi].mesas[mi].partidas[0].pts2 = null;
+  guardarSuizoFirebase().then(function(){ renderSuizoActivo(); });
+}
+
+function avanzarRondaSuizo() {
+  if (!esAdmin()) { toast('Solo el administrador puede avanzar rondas', true); return; }
+  var faseActual = suizoActual.fases[suizoActual.faseActual];
+  if (!faseCompleta(faseActual)) { toast('Completa todas las partidas primero', true); return; }
+
+  var nuevaRonda = suizoActual.rondaActual + 1;
+  if (nuevaRonda > suizoActual.rondasTotal) { toast('Ya se jugaron todas las rondas', true); return; }
+
+  // Ordenar por puntos, desempate por marcador acumulado
+  var ranking = suizoActual.jugadores.map(function(id) {
+    var marcAcum=0;
+    suizoActual.fases.forEach(function(fase){
+      fase.mesas.forEach(function(mesa){
+        mesa.partidas.forEach(function(p){
+          if(p.pts1===null) return;
+          if(p.pareja1.indexOf(id)!==-1) marcAcum+=p.pts1;
+          if(p.pareja2.indexOf(id)!==-1) marcAcum+=p.pts2;
+        });
+      });
+    });
+    return { id:id, pts:puntosJugadorEnFasesActualesSuizo(id), marcAcum:marcAcum };
+  });
+  ranking.sort(function(a,b){ return b.pts!==a.pts?b.pts-a.pts:b.marcAcum-a.marcAcum; });
+  var ordenados = ranking.map(function(r){ return r.id; });
+
+  var nuevaFase = crearFaseSuizo(ordenados, suizoActual.fases.length+1, suizoActual.fases);
+  suizoActual.fases.push(nuevaFase);
+  suizoActual.faseActual = suizoActual.fases.length-1;
+  suizoActual.rondaActual = nuevaRonda;
+
+  guardarSuizoFirebase().then(function(){
+    toast('♟️ Ronda '+nuevaRonda+' iniciada');
+    renderSuizoActivo();
+  });
+}
+
+function puntosJugadorEnFasesActualesSuizo(jugadorId) {
+  var total=0;
+  suizoActual.fases.forEach(function(fase){
+    total += puntosJugadorEnFase(fase, jugadorId);
+  });
+  return total;
+}
+
+function renderStandingsSuizoActual() {
+  var ranking = suizoActual.jugadores.map(function(id) {
+    var marcAcum=0;
+    suizoActual.fases.forEach(function(fase){
+      fase.mesas.forEach(function(mesa){
+        mesa.partidas.forEach(function(p){
+          if(p.pts1===null) return;
+          if(p.pareja1.indexOf(id)!==-1) marcAcum+=p.pts1;
+          if(p.pareja2.indexOf(id)!==-1) marcAcum+=p.pts2;
+        });
+      });
+    });
+    var pl=byId(id);
+    return {id:id,nombre:pl?pl.name:id,pts:puntosJugadorEnFasesActualesSuizo(id),marcAcum:marcAcum};
+  });
+  ranking.sort(function(a,b){return b.pts!==a.pts?b.pts-a.pts:b.marcAcum-a.marcAcum;});
+
+  var html='<div style="background:rgba(0,0,0,0.35);border:1px solid rgba(245,197,24,0.2);border-radius:10px;padding:16px;margin-top:14px;">';
+  html+='<div style="font-family:Oswald,sans-serif;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">📊 Posiciones tras esta ronda</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:6px;">';
+  ranking.forEach(function(j,idx){
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,0,0,0.2);border-radius:6px;">';
+    html+='<span style="font-size:13px;color:var(--text2);min-width:24px;">'+(idx+1)+'°</span>';
+    html+='<span style="flex:1;font-size:14px;font-weight:600;color:var(--text);">'+j.nombre+'</span>';
+    html+='<span style="font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:var(--accent);">'+j.pts+'</span>';
+    html+='<span style="font-size:11px;color:var(--text2);min-width:80px;text-align:right;">marc: '+j.marcAcum+'</span>';
+    html+='</div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+function renderClasificacionFinalSuizo() {
+  var ranking = suizoActual.jugadores.map(function(id) {
+    var marcAcum=0;
+    suizoActual.fases.forEach(function(fase){
+      fase.mesas.forEach(function(mesa){
+        mesa.partidas.forEach(function(p){
+          if(p.pts1===null) return;
+          if(p.pareja1.indexOf(id)!==-1) marcAcum+=p.pts1;
+          if(p.pareja2.indexOf(id)!==-1) marcAcum+=p.pts2;
+        });
+      });
+    });
+    var pl=byId(id);
+    return {id:id,nombre:pl?pl.name:id,pts:puntosJugadorEnFasesActualesSuizo(id),marcAcum:marcAcum};
+  });
+  ranking.sort(function(a,b){return b.pts!==a.pts?b.pts-a.pts:b.marcAcum-a.marcAcum;});
+
+  var medals=['🥇','🥈','🥉'];
+  var html='<div style="background:linear-gradient(135deg,rgba(245,197,24,0.2),rgba(0,0,0,0.6));border:2px solid var(--accent);border-radius:14px;padding:28px;margin-top:16px;">';
+  html+='<div style="font-size:48px;text-align:center;margin-bottom:10px;">♟️🏆</div>';
+  html+='<div style="font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:var(--accent);text-align:center;margin-bottom:4px;">CLASIFICACIÓN FINAL · SISTEMA SUIZO</div>';
+  html+='<div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:18px;">Desempate por marcador acumulado en todas las partidas</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:8px;">';
+  ranking.forEach(function(j,idx){
+    var isWinner=idx===0;
+    html+='<div style="display:flex;align-items:center;gap:12px;background:'+(isWinner?'rgba(245,197,24,0.12)':'rgba(0,0,0,0.3)')+';border:1px solid '+(isWinner?'rgba(245,197,24,0.3)':'rgba(255,255,255,0.07)')+';border-radius:8px;padding:10px 16px;">';
+    html+='<div style="font-size:22px;min-width:32px;">'+(medals[idx]||(idx+1)+'°')+'</div>';
+    html+='<div style="flex:1;font-size:14px;font-weight:700;color:'+(isWinner?'var(--accent)':'var(--text)')+';">'+j.nombre+'</div>';
+    html+='<div style="text-align:right;"><div style="font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:'+(isWinner?'var(--accent)':'var(--text)')+';">'+j.pts+'</div><div style="font-size:10px;color:var(--text2);">pts totales</div></div>';
+    html+='<div style="text-align:right;min-width:70px;"><div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--text3);">'+j.marcAcum+'</div><div style="font-size:10px;color:var(--text2);">marc. acum.</div></div>';
+    html+='</div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+function confirmarEliminarSuizo() {
+  if (!esAdmin()) { toast('Solo el administrador puede eliminar torneos', true); return; }
+  if (!confirm('¿Eliminar el torneo Suizo "'+suizoActual.nombre+'"?')) return;
+  suizoActual=null;
+  guardarSuizoFirebase().then(function(){ toast('Torneo eliminado'); renderSuizoActivo(); });
+}
 
 
 
